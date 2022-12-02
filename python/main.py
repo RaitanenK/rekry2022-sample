@@ -5,7 +5,7 @@ import websocket
 import json
 from lib.math import normalize_heading
 import time
-
+import keyboard
 FRONTEND_BASE = "noflight.monad.fi"
 BACKEND_BASE = "noflight.monad.fi/backend"
 
@@ -44,8 +44,21 @@ def on_close(ws, close_status_code, close_msg):
 def generate_commands(game_state):
     commands = []
     for aircraft in game_state["aircrafts"]:
-        # Go loopy loop
-        new_dir = normalize_heading(aircraft['direction'] + 20)
+
+        steer = 0
+        #steer left
+        if keyboard.is_pressed("a"):
+            print("left")
+            steer = 10
+        # steer right
+        if keyboard.is_pressed("d"):
+            print("right")
+            steer = -10
+        #steer more heavily
+        if keyboard.is_pressed("space"):
+            steer *= 2
+
+        new_dir = normalize_heading(aircraft['direction']+steer)
         commands.append(f"HEAD {aircraft['id']} {new_dir}")
 
     return commands
